@@ -71,15 +71,13 @@
 			lat = 0, onMouseDownLat = 0,
 			phi = 0, theta = 0;
 
+			var layerMeshes = [];
+
 			init();
 			animate();
 
-			var masker = {};
 
 			function getLayerMesh(color, maskOffsetX){
-				// var material = new THREE.MeshBasicMaterial( {
-				// 	map: new THREE.TextureLoader().load( 'textures/chess-world.jpg' )
-				// } );
 
 				var uniforms = {
 					color: { value: color },
@@ -98,7 +96,9 @@
 					transparent: true
 				});
 
-				return new THREE.Mesh( geometry, shaderMaterial );
+				var mesh = new THREE.Mesh( geometry, shaderMaterial );
+				layerMeshes.push(mesh);
+				return mesh;
 			}
 
 			function init() {
@@ -162,8 +162,13 @@
 					var reader = new FileReader();
 					reader.addEventListener( 'load', function ( event ) {
 
-						material.map.image.src = event.target.result;
-						material.map.needsUpdate = true;
+						for(var i=0; i<layerMeshes.length; i++){
+							layerMeshes[i].material.uniforms.texColor.value.image.src = event.target.result;
+							layerMeshes[i].material.uniforms.texColor.value.needsUpdate = true;
+						}
+						//material.map.image.src = event.target.result;
+						//material.map.needsUpdate = true;
+
 
 					}, false );
 					reader.readAsDataURL( event.dataTransfer.files[ 0 ] );
